@@ -1,27 +1,161 @@
+/* src/app/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --gold: #C9A84C;
+  --gold-light: #E8CC7A;
+  --black: #0A0A0A;
+  --dark: #111111;
+  --dark2: #1A1A1A;
+  --cream: #F5F0E8;
+  --white: #FAFAF8;
+  --gray: #888880;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--black);
+  color: var(--cream);
+  cursor: none;
+}
+
+/* ── Curseur custom ──────────────────────────────── */
+.cursor-dot {
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.08s;
+}
+.cursor-ring {
+  width: 32px; height: 32px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.14s ease, width 0.3s, height 0.3s, background 0.3s;
+  opacity: 0.6;
+}
+.cursor-ring.hovered { width: 52px; height: 52px; background: rgba(201,168,76,0.08); }
+
+/* ── Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+/* ── Typographie ─────────────────────────────────── */
+.font-display {
+  font-family: var(--font-cormorant), serif;
+}
+
+/* ── Boutons ─────────────────────────────────────── */
+@layer components {
+  .btn-gold {
+    @apply relative overflow-hidden bg-brand-gold text-brand-black px-10 py-4
+           text-[10px] font-medium tracking-[0.35em] uppercase transition-all duration-300;
+  }
+  .btn-gold::before {
+    content: '';
+    @apply absolute inset-0 bg-brand-black translate-x-[-101%] transition-transform duration-[400ms];
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .btn-gold:hover { @apply text-brand-gold; }
+  .btn-gold:hover::before { @apply translate-x-0; }
+  .btn-gold span { @apply relative z-10; }
+
+  .btn-outline-gold {
+    @apply text-brand-cream border-b border-brand-gold pb-1
+           text-[10px] tracking-[0.35em] uppercase transition-colors duration-300
+           hover:text-brand-gold;
+  }
+
+  .section-tag {
+    @apply block text-[9px] tracking-[0.55em] uppercase text-brand-gold mb-5;
+  }
+
+  .section-title {
+    @apply font-display text-[clamp(42px,5vw,72px)] font-light text-brand-white;
+  }
+
+  .section-divider {
+    @apply w-14 h-px bg-brand-gold mx-auto mt-7;
+  }
+
+  .product-tag {
+    @apply block text-[8px] tracking-[0.5em] uppercase text-brand-gold mb-3;
+  }
+
+  .nav-link {
+    @apply relative text-[11px] font-normal tracking-[0.25em] uppercase
+           text-brand-cream no-underline transition-colors duration-300 hover:text-brand-gold-light;
+  }
+  .nav-link::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 right-0 h-px bg-brand-gold
+           scale-x-0 origin-left transition-transform duration-[400ms];
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .nav-link:hover::after { @apply scale-x-100; }
+}
+
+/* ── Révélation au scroll ───────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.12s; }
+.reveal-delay-2 { transition-delay: 0.26s; }
+.reveal-delay-3 { transition-delay: 0.4s; }
+
+/* ── Overlay gradient produit ───────────────────── */
+.product-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(10,10,10,0.95) 0%,
+    rgba(10,10,10,0.3) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.product-card:hover .product-overlay { opacity: 1; }
+
+/* ── Animations globales ────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  /* Utilisation du préfixe - si Tailwind ne le génère pas automatiquement */
+  .rotate-y-180 {
+    transform: rotateY(180deg);
   }
 }

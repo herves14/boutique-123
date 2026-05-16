@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── UTILISATEUR / ADMIN ───────────────────────────────────────────
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+}
+
+// ─── CATÉGORIE ─────────────────────────────────────────────────────
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+}
+
+// ─── PRODUIT ───────────────────────────────────────────────────────
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String?
+  price       Float
+  stock       Int         @default(0)
+  images      String[]
+  isNew       Boolean     @default(false)
+  isFeatured  Boolean     @default(false)
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  sizes       Size[]
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum Size {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+  // Pointures chaussures EU
+  EU_35
+  EU_36
+  EU_37
+  EU_38
+  EU_39
+  EU_40
+  EU_41
+  EU_42
+  EU_43
+  EU_44
+  EU_45
+  EU_46
+}
+
+// ─── COMMANDE ──────────────────────────────────────────────────────
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique @default(cuid())
+  status          OrderStatus @default(PENDING)
+  total           Float
+  items           OrderItem[]
+  delivery        Delivery?
+  payment         Payment?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// ─── ITEM DE COMMANDE ──────────────────────────────────────────────
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  size      Size
+  price     Float
+}
+
+// ─── LIVRAISON ─────────────────────────────────────────────────────
+model Delivery {
+  id         String   @id @default(cuid())
+  order      Order    @relation(fields: [orderId], references: [id])
+  orderId    String   @unique
+  fullName   String
+  phone      String
+  address    String
+  city       String
+  notes      String?
+  createdAt  DateTime @default(now())
+}
+
+// ─── PAIEMENT ──────────────────────────────────────────────────────
+model Payment {
+  id            String        @id @default(cuid())
+  order         Order         @relation(fields: [orderId], references: [id])
+  orderId       String        @unique
+  fedapayId     String?
+  status        PaymentStatus @default(PENDING)
+  amount        Float
+  currency      String        @default("XOF")
+  createdAt     DateTime      @default(now())
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  CANCELLED
+}
+
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
