@@ -56,16 +56,16 @@ export default function PanierPage() {
 
             {/* ── Liste articles ── */}
             <div className="space-y-0 border-t border-white/5">
-              {items.map((item, i) => (
+              {items.map((item) => (
                 <div
                   key={item.id}
                   className="flex gap-6 py-8 border-b border-white/5
                     hover:bg-white/[0.01] transition-colors"
                 >
-                  {/* Image / placeholder */}
-                  <div className="w-24 h-32 bg-brand-dark2 flex-shrink-0 flex items-center justify-center overflow-hidden">
-                    {item.image ? (
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  {/* Image / placeholder — corrigé: imageUrl au lieu de image */}
+                  <div className="w-24 h-32 bg-brand-dark2 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-xl">
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                     ) : (
                       <span className="font-display text-2xl text-brand-gold/40">
                         1<span className="text-brand-gold">2</span>3
@@ -77,12 +77,14 @@ export default function PanierPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-[9px] tracking-[0.5em] uppercase text-brand-gold mb-1">123</p>
                     <p className="font-display text-xl font-light text-brand-white mb-1">{item.name}</p>
-                    <p className="text-[10px] tracking-[0.3em] uppercase text-brand-gray mb-4">
-                      Taille : {item.size}
-                    </p>
+                    {item.size && (
+                      <p className="text-[10px] tracking-[0.3em] uppercase text-brand-gray mb-4">
+                        Taille : {item.size.startsWith('EU_') ? item.size.replace('EU_', '') : item.size}
+                      </p>
+                    )}
 
                     {/* Quantité */}
-                    <div className="flex items-center gap-0 border border-white/10 w-fit">
+                    <div className="flex items-center gap-0 rounded-full border border-white/10 w-fit overflow-hidden">
                       <button
                         onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
                         className="w-9 h-9 flex items-center justify-center text-brand-gray
@@ -125,12 +127,11 @@ export default function PanierPage() {
             </div>
 
             {/* ── Récapitulatif ── */}
-            <div className="bg-brand-dark border border-white/5 p-8 sticky top-28">
+            <div className="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/8 p-8 sticky top-28">
               <p className="text-[9px] tracking-[0.5em] uppercase text-brand-gold mb-8">
                 Récapitulatif
               </p>
 
-              {/* Détail prix */}
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-[12px]">
                   <span className="text-brand-gray tracking-wider">Sous-total</span>
@@ -142,23 +143,23 @@ export default function PanierPage() {
                 </div>
               </div>
 
-              {/* Total */}
               <div className="border-t border-white/8 pt-6 mb-8">
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] tracking-[0.35em] uppercase text-brand-cream">Total</span>
-                  <span className="font-display text-2xl font-light text-brand-gold-light">
+                  <span className="font-display text-2xl font-light text-brand-gold">
                     {formatPrice(totalPrice())}
                   </span>
                 </div>
                 <p className="text-[10px] text-brand-gray mt-1 tracking-wider">Taxes incluses</p>
               </div>
 
-              {/* CTA */}
               <Link
                 href="/checkout"
-                className="btn-gold w-full flex items-center justify-center gap-3 mb-4"
+                className="w-full flex items-center justify-center gap-3 px-8 py-4 rounded-full
+                  bg-brand-gold text-brand-black text-[10px] font-medium tracking-[0.35em] uppercase
+                  hover:bg-brand-gold-light transition-all shadow-[0_8px_32px_rgba(201,168,76,0.3)] mb-4"
               >
-                <span>Passer la commande</span>
+                Passer la commande
                 <ArrowRight size={14} strokeWidth={1.5} />
               </Link>
 
@@ -170,18 +171,17 @@ export default function PanierPage() {
                 Continuer mes achats
               </Link>
 
-              {/* Paiement sécurisé */}
               <div className="mt-8 pt-6 border-t border-white/5">
                 <p className="text-[9px] tracking-[0.4em] uppercase text-brand-gray text-center mb-4">
                   Paiement sécurisé via
                 </p>
                 <div className="flex items-center justify-center gap-3">
-                  <div className="bg-brand-dark2 border border-white/10 px-4 py-2 text-[11px]
-                    tracking-widest text-brand-gold font-medium">
+                  <div className="rounded-full border border-white/10 px-4 py-2 text-[11px]
+                    tracking-widest text-brand-gold font-medium bg-white/5">
                     FedaPay
                   </div>
-                  <div className="bg-brand-dark2 border border-white/10 px-4 py-2 text-[10px]
-                    tracking-widest text-brand-gray">
+                  <div className="rounded-full border border-white/10 px-4 py-2 text-[10px]
+                    tracking-widest text-brand-gray bg-white/5">
                     XOF · FCFA
                   </div>
                 </div>
