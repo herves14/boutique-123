@@ -36,7 +36,7 @@ export default function OutfitViewer({
     let animId: number, time = 0
 
     const init = async () => {
-      THREE = (await import('three')).default ?? await import('three')
+      THREE = await import('three')
 
       const canvas = canvasRef.current!
       const W = width ?? containerRef.current?.clientWidth ?? 400
