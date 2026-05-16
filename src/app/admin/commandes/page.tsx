@@ -14,29 +14,30 @@ async function getStats() {
       prisma.order.count({ where: { status: 'CONFIRMED' } }),
       prisma.payment.aggregate({ where: { status: 'APPROVED' }, _sum: { amount: true } }),
     ])
-    return { 
-      total, 
-      pending, 
-      confirmed, 
-      revenue: revenue._sum.amount ?? 0 
+    return {
+      total,
+      pending,
+      confirmed,
+      revenue: revenue._sum.amount ?? 0,
     }
   } catch (error) {
-    console.error("Erreur stats:", error)
+    console.error('Erreur stats:', error)
     return { total: 0, pending: 0, confirmed: 0, revenue: 0 }
   }
 }
 
-async function getActiveDates() {
+async function getActiveDates(): Promise<string[]> {
   try {
-    const orders = await prisma.order.findMany({ 
+    const orders = await prisma.order.findMany({
       select: { createdAt: true },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     })
-    const dates = orders.map(o => o.createdAt.toISOString().split('T'))
+    // ← Correction : [0] pour prendre uniquement la date (string), pas le tableau
+    const dates = orders.map(o => o.createdAt.toISOString().split('T')[0])
     return [...new Set(dates)]
-  } catch (error) { 
-    console.error("Erreur dates:", error)
-    return [] 
+  } catch (error) {
+    console.error('Erreur dates:', error)
+    return []
   }
 }
 
@@ -56,7 +57,7 @@ export default async function AdminCommandesPage() {
           {[
             { label: 'Total',      value: stats.total,                color: 'text-brand-white' },
             { label: 'En attente', value: stats.pending,              color: 'text-yellow-400' },
-            { label: 'Confirmes',  value: stats.confirmed,            color: 'text-green-400' },
+            { label: 'Confirmés',  value: stats.confirmed,            color: 'text-green-400' },
             { label: 'Revenus',    value: formatPrice(stats.revenue), color: 'text-brand-gold-light' },
           ].map((s) => (
             <div key={s.label} className="bg-brand-dark border border-white/5 px-6 py-5">
