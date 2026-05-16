@@ -70,7 +70,7 @@ export default function ProductDetail({ product }: { product: Product }) {
       productId: product.id,
       name:      product.name,
       price:     product.price,
-      image:     product.images[0] ?? undefined,
+      imageUrl: product.images[0] ?? undefined,
       size:      selectedSize ?? ('UNIQUE' as Size),
       quantity,
     })
